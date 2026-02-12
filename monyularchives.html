@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monyul Archives - Digital Cultural Heritage Collection</title>
+    <meta name="description" content="A comprehensive digital archive preserving the history, culture, literature, oral traditions, and heritage of Monyul">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Libre+Baskerville:wght@400;700&family=Source+Serif+4:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2c1810;
+            --secondary: #8b4513;
+            --accent: #d4a574;
+            --text: #1a1a1a;
+            --text-light: #666;
+            --bg: #faf8f5;
+            --white: #ffffff;
+            --border: #e0d5c7;
+            --shadow: rgba(44, 24, 16, 0.1);
+        }
+
+        body {
+            font-family: 'Source Serif 4', serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .admin-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Libre Baskerville', serif;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .admin-toggle:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px var(--shadow);
+        }
+
+        .admin-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            overflow-y: auto;
+            padding: 40px 20px;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 12px;
+            padding: 40px;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .admin-header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 36px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .close-admin {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Libre Baskerville', serif;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .close-admin:hover {
+            background: var(--secondary);
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .admin-tab {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-family: 'Libre Baskerville', serif;
+            font-size: 14px;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .admin-tab:hover {
+            color: var(--primary);
+        }
+
+        .admin-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--accent);
+            font-weight: 700;
+        }
+
+        .admin-content {
+            display: none;
+        }
+
+        .admin-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-family: 'Libre Baskerville', serif;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="url"],
+        .form-group input[type="file"],
+        .form-group input[type="number"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-family: 'Source Serif 4', serif;
+            font-size: 14px;
+            background: var(--bg);
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Libre Baskerville', serif;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--accent);
+            color: var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-danger {
+            background: #c1440e;
+        }
+
+        .btn-danger:hover {
+            background: #a03a0c;
+        }
+
+        .item-list {
+            margin-top: 30px;
+        }
+
+        .item-card {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .item-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .item-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .item-card h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .item-card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 6px 14px;
+            font-size: 12px;
+        }
+
+        /* Main Website Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #1a0f08 100%);
+            color: var(--white);
+            padding: 30px 0;
+            box-shadow: 0 4px 20px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo-img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            display: none;
+        }
+
+        .logo-img.visible {
+            display: block;
+        }
+
+        .site-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav a {
+            color: var(--white);
+            text-decoration: none;
+            font-family: 'Libre Baskerville', serif;
+            font-size: 14px;
+            font-weight: 400;
+            transition: color 0.3s ease;
+            opacity: 0.9;
+        }
+
+        .nav a:hover {
+            color: var(--accent);
+            opacity: 1;
+        }
+
+        .hero {
+            background: linear-gradient(to bottom, rgba(44, 24, 16, 0.8), rgba(44, 24, 16, 0.9)),
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23d4a574" width="1200" height="600"/><path fill="%238b4513" opacity="0.1" d="M0 300L50 283C100 267 200 233 300 250C400 267 500 333 600 317C700 300 800 200 900 183C1000 167 1100 233 1150 267L1200 300V600H1150C1100 600 1000 600 900 600C800 600 700 600 600 600C500 600 400 600 300 600C200 600 100 600 50 600H0V300Z"/></svg>');
+            background-size: cover;
+            background-position: center;
+            color: var(--white);
+            padding: 120px 40px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 64px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero p {
+            font-size: 20px;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            opacity: 0.95;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .search-bar {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Source Serif 4', serif;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .search-bar button {
+            padding: 16px 32px;
+            background: var(--accent);
+            color: var(--primary);
+            border: none;
+            border-radius: 8px;
+            font-family: 'Libre Baskerville', serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar button:hover {
+            background: var(--secondary);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 40px;
+        }
+
+        .section {
+            margin-bottom: 100px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .section-header p {
+            font-size: 18px;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px var(--shadow);
+            border-color: var(--accent);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+        }
+
+        .card-content {
+            padding: 25px;
+        }
+
+        .card-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .card-meta {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+
+        .card-description {
+            font-size: 15px;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 10px 24px;
+            background: var(--white);
+            border: 2px solid var(--border);
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Libre Baskerville', serif;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            color: var(--text);
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .footer {
+            background: var(--primary);
+            color: var(--white);
+            padding: 60px 40px 30px;
+            margin-top: 100px;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .footer p,
+        .footer a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .footer a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9998;
+            overflow-y: auto;
+            padding: 40px 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--white);
+            max-width: 900px;
+            width: 100%;
+            border-radius: 12px;
+            padding: 40px;
+            position: relative;
+            animation: modalSlideIn 0.4s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 32px;
+            cursor: pointer;
+            color: var(--text-light);
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--primary);
+        }
+
+        .modal h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 36px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            margin: 20px 0;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+        }
+
+        audio {
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .hero h1 {
+                font-size: 42px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .search-bar {
+                flex-direction: column;
+            }
+
+            .section-header h2 {
+                font-size: 36px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Toggle Button -->
+    <button class="admin-toggle" onclick="toggleAdmin()">⚙️ Admin Panel</button>
+
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-container">
+            <div class="admin-header">
+                <h1>Monyul Archives - Admin Dashboard</h1>
+                <button class="close-admin" onclick="toggleAdmin()">Close</button>
+            </div>
+
+            <div class="admin-tabs">
+                <button class="admin-tab active" onclick="switchTab('general')">General Settings</button>
+                <button class="admin-tab" onclick="switchTab('library')">Digital Library</button>
+                <button class="admin-tab" onclick="switchTab('videos')">Video Archive</button>
+                <button class="admin-tab" onclick="switchTab('audio')">Audio Archive</button>
+                <button class="admin-tab" onclick="switchTab('photos')">Photo Archive</button>
+                <button class="admin-tab" onclick="switchTab('articles')">Articles & Research</button>
+            </div>
+
+            <!-- General Settings -->
+            <div class="admin-content active" id="general">
+                <h2 style="font-family: 'Cormorant Garamond', serif; margin-bottom: 20px;">General Settings</h2>
+                <div class="form-group">
+                    <label>Site Title</label>
+                    <input type="text" id="siteTitle" value="Monyul Archives" onchange="updateSiteTitle()">
+                </div>
+                <div class="form-group">
+                    <label>Site Description</label>
+                    <textarea id="siteDescription" onchange="updateSiteDescription()">Preserving the rich cultural heritage of Monyul through digital archives</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Logo Image URL</label>
+                    <input type="url" id="logoUrl" placeholder="https://example.com/logo.png" onchange="updateLogo()">
+                </div>
+                <div class="form-group">
+                    <label>Hero Title</label>
+                    <input type="text" id="heroTitle" value="Preserving Monyul's Cultural Heritage" onchange="updateHeroTitle()">
+                </div>
+                <div class="form-group">
+                    <label>Hero Description</label>
+                    <textarea id="heroDescription" onchange="updateHeroDescription()">A comprehensive digital archive of the history, culture, literature, oral traditions, and heritage of Monyul</textarea>
+                </div>
+            </div>
+
+            <!-- Digital Library -->
+            <div class="admin-content" id="library">
+                <h2 style="font-family: 'Cormorant Garamond', serif; margin-bottom: 20px;">Manage Digital Library</h2>
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="libTitle">
+                </div>
+                <div class="form-group">
+                    <label>Author</label>
+                    <input type="text" id="libAuthor">
+                </div>
+                <div class="form-group">
+                    <label>Year</label>
+                    <input type="number" id="libYear">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="libCategory">
+                        <option value="Books">Books</option>
+                        <option value="Manuscripts">Manuscripts</option>
+                        <option value="Articles">Articles</option>
+                        <option value="Research">Research Papers</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="libDescription"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>PDF URL or Upload</label>
+                    <input type="url" id="libPdf" placeholder="https://example.com/document.pdf">
+                </div>
+                <button class="btn" onclick="addLibraryItem()">Add to Library</button>
+
+                <div class="item-list" id="libraryList"></div>
+            </div>
+
+            <!-- Video Archive -->
+            <div class="admin-content" id="videos">
+                <h2 style="font-family: 'Cormorant Garamond', serif; margin-bottom: 20px;">Manage Video Archive</h2>
+                <div class="form-group">
+                    <label>Video Title</label>
+                    <input type="text" id="vidTitle">
+                </div>
+                <div class="form-group">
+                    <label>YouTube or Vimeo URL</label>
+                    <input type="url" id="vidUrl" placeholder="https://www.youtube.com/watch?v=...">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="vidCategory">
+                        <option value="Lectures">Lectures</option>
+                        <option value="Documentaries">Documentaries</option>
+                        <option value="Interviews">Interviews</option>
+                        <option value="Cultural Events">Cultural Events</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="vidDescription"></textarea>
+                </div>
+                <button class="btn" onclick="addVideoItem()">Add Video</button>
+
+                <div class="item-list" id="videoList"></div>
+            </div>
+
+            <!-- Audio Archive -->
+            <div class="admin-content" id="audio">
+                <h2 style="font-family: 'Cormorant Garamond', serif; margin-bottom: 20px;">Manage Audio Archive</h2>
+                <div class="form-group">
+                    <label>Audio Title</label>
+                    <input type="text" id="audTitle">
+                </div>
+                <div class="form-group">
+                    <label>Speaker/Artist</label>
+                    <input type="text" id="audSpeaker">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="audCategory">
+                        <option value="Oral History">Oral History</option>
+                        <option value="Teachings">Teachings</option>
+                        <option value="Interviews">Interviews</option>
+                        <option value="Traditional Music">Traditional Music</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Audio File URL</label>
+                    <input type="url" id="audUrl" placeholder="https://example.com/audio.mp3">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="audDescription"></textarea>
+                </div>
+                <button class="btn" onclick="addAudioItem()">Add Audio</button>
+
+                <div class="item-list" id="audioList"></div>
+            </div>
+
+            <!-- Photo Archive -->
+            <div class="admin-content" id="photos">
+                <h2 style="font-family: 'Cormorant Garamond', serif; margin-bottom: 20px;">Manage Photo Archive</h2>
+                <div class="form-group">
+                    <label>Photo Title</label>
+                    <input type="text" id="photoTitle">
+                </div>
+                <div class="form-group">
+                    <label>Image URL</label>
+                    <input type="url" id="photoUrl" placeholder="https://example.com/image.jpg">
+                </div>
+                <div class="form-group">
+                    <label>Year</label>
+                    <input type="number" id="photoYear">
+                </div>
+                <div class="form-group">
+                    <label>Caption/Description</label>
+                    <textarea id="photoDescription"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tags (comma-separated)</label>
+                    <input type="text" id="photoTags" placeholder="landscape, monastery, festival">
+                </div>
+                <button class="btn" onclick="addPhotoItem()">Add Photo</button>
+
+                <div class="item-list" id="photoList"></div>
+            </div>
+
+            <!-- Articles -->
+            <div class="admin-content" id="articles">
+                <h2 style="font-family: 'Cormorant Garamond', serif; margin-bottom: 20px;">Manage Articles & Research</h2>
+                <div class="form-group">
+                    <label>Article Title</label>
+                    <input type="text" id="artTitle">
+                </div>
+                <div class="form-group">
+                    <label>Author</label>
+                    <input type="text" id="artAuthor">
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="text" id="artDate" placeholder="February 2026">
+                </div>
+                <div class="form-group">
+                    <label>Content</label>
+                    <textarea id="artContent" style="min-height: 200px;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Featured Image URL (optional)</label>
+                    <input type="url" id="artImage" placeholder="https://example.com/article-image.jpg">
+                </div>
+                <button class="btn" onclick="addArticleItem()">Add Article</button>
+
+                <div class="item-list" id="articleList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Website -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <img id="logoImg" class="logo-img" src="" alt="Logo">
+                <div class="site-title" id="mainSiteTitle">Monyul Archives</div>
+            </div>
+            <nav class="nav">
+                <a href="#library">Digital Library</a>
+                <a href="#videos">Videos</a>
+                <a href="#audio">Audio</a>
+                <a href="#photos">Photos</a>
+                <a href="#articles">Articles</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1 id="heroTitleText">Preserving Monyul's Cultural Heritage</h1>
+        <p id="heroDescText">A comprehensive digital archive of the history, culture, literature, oral traditions, and heritage of Monyul</p>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search the archives...">
+            <button onclick="performSearch()">Search</button>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Digital Library Section -->
+        <section class="section" id="library">
+            <div class="section-header">
+                <h2>Digital Library</h2>
+                <p>Books, manuscripts, articles, and research papers</p>
+            </div>
+            <div class="filter-bar" id="libraryFilters">
+                <button class="filter-btn active" onclick="filterLibrary('all')">All</button>
+                <button class="filter-btn" onclick="filterLibrary('Books')">Books</button>
+                <button class="filter-btn" onclick="filterLibrary('Manuscripts')">Manuscripts</button>
+                <button class="filter-btn" onclick="filterLibrary('Articles')">Articles</button>
+                <button class="filter-btn" onclick="filterLibrary('Research')">Research</button>
+            </div>
+            <div class="grid" id="libraryGrid"></div>
+        </section>
+
+        <!-- Video Archive Section -->
+        <section class="section" id="videos">
+            <div class="section-header">
+                <h2>Video Archive</h2>
+                <p>Lectures, documentaries, interviews, and cultural events</p>
+            </div>
+            <div class="filter-bar" id="videoFilters">
+                <button class="filter-btn active" onclick="filterVideos('all')">All</button>
+                <button class="filter-btn" onclick="filterVideos('Lectures')">Lectures</button>
+                <button class="filter-btn" onclick="filterVideos('Documentaries')">Documentaries</button>
+                <button class="filter-btn" onclick="filterVideos('Interviews')">Interviews</button>
+                <button class="filter-btn" onclick="filterVideos('Cultural Events')">Cultural Events</button>
+            </div>
+            <div class="grid" id="videoGrid"></div>
+        </section>
+
+        <!-- Audio Archive Section -->
+        <section class="section" id="audio">
+            <div class="section-header">
+                <h2>Audio Archive</h2>
+                <p>Oral histories, teachings, interviews, and traditional music</p>
+            </div>
+            <div class="filter-bar" id="audioFilters">
+                <button class="filter-btn active" onclick="filterAudio('all')">All</button>
+                <button class="filter-btn" onclick="filterAudio('Oral History')">Oral History</button>
+                <button class="filter-btn" onclick="filterAudio('Teachings')">Teachings</button>
+                <button class="filter-btn" onclick="filterAudio('Interviews')">Interviews</button>
+                <button class="filter-btn" onclick="filterAudio('Traditional Music')">Traditional Music</button>
+            </div>
+            <div class="grid" id="audioGrid"></div>
+        </section>
+
+        <!-- Photo Archive Section -->
+        <section class="section" id="photos">
+            <div class="section-header">
+                <h2>Photo Archive</h2>
+                <p>Historical and cultural photographs</p>
+            </div>
+            <div class="grid" id="photoGrid"></div>
+        </section>
+
+        <!-- Articles Section -->
+        <section class="section" id="articles">
+            <div class="section-header">
+                <h2>Articles & Research</h2>
+                <p>Scholarly articles and research publications</p>
+            </div>
+            <div class="grid" id="articleGrid"></div>
+        </section>
+    </div>
+
+    <!-- Modal for Item Details -->
+    <div class="modal" id="itemModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div>
+                <h3>About Monyul Archives</h3>
+                <p>Dedicated to preserving and sharing the rich cultural heritage of Monyul through comprehensive digital archives.</p>
+            </div>
+            <div>
+                <h3>Quick Links</h3>
+                <a href="#library">Digital Library</a>
+                <a href="#videos">Video Archive</a>
+                <a href="#audio">Audio Archive</a>
+                <a href="#photos">Photo Archive</a>
+            </div>
+            <div>
+                <h3>Contact</h3>
+                <p>Email: info@monyularchives.org</p>
+                <p>Address: Monyul Cultural Center</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Monyul Archives. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Data Storage
+        let libraryData = [];
+        let videoData = [];
+        let audioData = [];
+        let photoData = [];
+        let articleData = [];
+
+        // Admin Panel Functions
+        function toggleAdmin() {
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('active');
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.admin-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.admin-content').forEach(content => content.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // General Settings
+        function updateSiteTitle() {
+            const title = document.getElementById('siteTitle').value;
+            document.getElementById('mainSiteTitle').textContent = title;
+            document.title = title + ' - Digital Cultural Heritage Collection';
+        }
+
+        function updateLogo() {
+            const url = document.getElementById('logoUrl').value;
+            const logoImg = document.getElementById('logoImg');
+            if (url) {
+                logoImg.src = url;
+                logoImg.classList.add('visible');
+            } else {
+                logoImg.classList.remove('visible');
+            }
+        }
+
+        function updateHeroTitle() {
+            document.getElementById('heroTitleText').textContent = document.getElementById('heroTitle').value;
+        }
+
+        function updateHeroDescription() {
+            document.getElementById('heroDescText').textContent = document.getElementById('heroDescription').value;
+        }
+
+        // Library Functions
+        function addLibraryItem() {
+            const item = {
+                id: Date.now(),
+                title: document.getElementById('libTitle').value,
+                author: document.getElementById('libAuthor').value,
+                year: document.getElementById('libYear').value,
+                category: document.getElementById('libCategory').value,
+                description: document.getElementById('libDescription').value,
+                pdf: document.getElementById('libPdf').value
+            };
+            
+            if (item.title && item.author) {
+                libraryData.push(item);
+                renderLibrary();
+                renderLibraryAdmin();
+                clearLibraryForm();
+            }
+        }
+
+        function deleteLibraryItem(id) {
+            libraryData = libraryData.filter(item => item.id !== id);
+            renderLibrary();
+            renderLibraryAdmin();
+        }
+
+        function clearLibraryForm() {
+            document.getElementById('libTitle').value = '';
+            document.getElementById('libAuthor').value = '';
+            document.getElementById('libYear').value = '';
+            document.getElementById('libDescription').value = '';
+            document.getElementById('libPdf').value = '';
+        }
+
+        function renderLibrary() {
+            const grid = document.getElementById('libraryGrid');
+            if (libraryData.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><h3>No items yet</h3><p>Add items from the admin panel</p></div>';
+                return;
+            }
+            
+            grid.innerHTML = libraryData.map(item => `
+                <div class="card" onclick="showLibraryModal(${item.id})">
+                    <div class="card-image">📚</div>
+                    <div class="card-content">
+                        <h3 class="card-title">${item.title}</h3>
+                        <div class="card-meta">${item.author} • ${item.year} • ${item.category}</div>
+                        <p class="card-description">${item.description.substring(0, 120)}...</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderLibraryAdmin() {
+            const list = document.getElementById('libraryList');
+            list.innerHTML = libraryData.map(item => `
+                <div class="item-card">
+                    <div class="item-card-header">
+                        <div>
+                            <h3>${item.title}</h3>
+                            <div style="color: #666; font-size: 14px;">${item.author} • ${item.year}</div>
+                        </div>
+                        <div class="item-card-actions">
+                            <button class="btn btn-small btn-danger" onclick="deleteLibraryItem(${item.id})">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showLibraryModal(id) {
+            const item = libraryData.find(i => i.id === id);
+            const modal = document.getElementById('itemModal');
+            document.getElementById('modalBody').innerHTML = `
+                <h2>${item.title}</h2>
+                <p style="color: #666; margin-bottom: 20px;">${item.author} • ${item.year} • ${item.category}</p>
+                <p style="margin-bottom: 20px;">${item.description}</p>
+                ${item.pdf ? `<a href="${item.pdf}" target="_blank" class="btn">View PDF</a>` : ''}
+            `;
+            modal.classList.add('active');
+        }
+
+        // Video Functions
+        function addVideoItem() {
+            const item = {
+                id: Date.now(),
+                title: document.getElementById('vidTitle').value,
+                url: document.getElementById('vidUrl').value,
+                category: document.getElementById('vidCategory').value,
+                description: document.getElementById('vidDescription').value
+            };
+            
+            if (item.title && item.url) {
+                videoData.push(item);
+                renderVideos();
+                renderVideosAdmin();
+                clearVideoForm();
+            }
+        }
+
+        function deleteVideoItem(id) {
+            videoData = videoData.filter(item => item.id !== id);
+            renderVideos();
+            renderVideosAdmin();
+        }
+
+        function clearVideoForm() {
+            document.getElementById('vidTitle').value = '';
+            document.getElementById('vidUrl').value = '';
+            document.getElementById('vidDescription').value = '';
+        }
+
+        function getVideoEmbedUrl(url) {
+            if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                const videoId = url.includes('youtu.be') ? url.split('/').pop() : new URLSearchParams(new URL(url).search).get('v');
+                return `https://www.youtube.com/embed/${videoId}`;
+            } else if (url.includes('vimeo.com')) {
+                const videoId = url.split('/').pop();
+                return `https://player.vimeo.com/video/${videoId}`;
+            }
+            return url;
+        }
+
+        function renderVideos() {
+            const grid = document.getElementById('videoGrid');
+            if (videoData.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><h3>No videos yet</h3><p>Add videos from the admin panel</p></div>';
+                return;
+            }
+            
+            grid.innerHTML = videoData.map(item => `
+                <div class="card" onclick="showVideoModal(${item.id})">
+                    <div class="card-image">🎬</div>
+                    <div class="card-content">
+                        <h3 class="card-title">${item.title}</h3>
+                        <div class="card-meta">${item.category}</div>
+                        <p class="card-description">${item.description.substring(0, 120)}...</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderVideosAdmin() {
+            const list = document.getElementById('videoList');
+            list.innerHTML = videoData.map(item => `
+                <div class="item-card">
+                    <div class="item-card-header">
+                        <div>
+                            <h3>${item.title}</h3>
+                            <div style="color: #666; font-size: 14px;">${item.category}</div>
+                        </div>
+                        <div class="item-card-actions">
+                            <button class="btn btn-small btn-danger" onclick="deleteVideoItem(${item.id})">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showVideoModal(id) {
+            const item = videoData.find(i => i.id === id);
+            const modal = document.getElementById('itemModal');
+            const embedUrl = getVideoEmbedUrl(item.url);
+            document.getElementById('modalBody').innerHTML = `
+                <h2>${item.title}</h2>
+                <p style="color: #666; margin-bottom: 20px;">${item.category}</p>
+                <div class="video-container">
+                    <iframe src="${embedUrl}" allowfullscreen></iframe>
+                </div>
+                <p style="margin-top: 20px;">${item.description}</p>
+            `;
+            modal.classList.add('active');
+        }
+
+        // Audio Functions
+        function addAudioItem() {
+            const item = {
+                id: Date.now(),
+                title: document.getElementById('audTitle').value,
+                speaker: document.getElementById('audSpeaker').value,
+                category: document.getElementById('audCategory').value,
+                url: document.getElementById('audUrl').value,
+                description: document.getElementById('audDescription').value
+            };
+            
+            if (item.title && item.url) {
+                audioData.push(item);
+                renderAudio();
+                renderAudioAdmin();
+                clearAudioForm();
+            }
+        }
+
+        function deleteAudioItem(id) {
+            audioData = audioData.filter(item => item.id !== id);
+            renderAudio();
+            renderAudioAdmin();
+        }
+
+        function clearAudioForm() {
+            document.getElementById('audTitle').value = '';
+            document.getElementById('audSpeaker').value = '';
+            document.getElementById('audUrl').value = '';
+            document.getElementById('audDescription').value = '';
+        }
+
+        function renderAudio() {
+            const grid = document.getElementById('audioGrid');
+            if (audioData.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><h3>No audio files yet</h3><p>Add audio from the admin panel</p></div>';
+                return;
+            }
+            
+            grid.innerHTML = audioData.map(item => `
+                <div class="card" onclick="showAudioModal(${item.id})">
+                    <div class="card-image">🎵</div>
+                    <div class="card-content">
+                        <h3 class="card-title">${item.title}</h3>
+                        <div class="card-meta">${item.speaker} • ${item.category}</div>
+                        <p class="card-description">${item.description.substring(0, 120)}...</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAudioAdmin() {
+            const list = document.getElementById('audioList');
+            list.innerHTML = audioData.map(item => `
+                <div class="item-card">
+                    <div class="item-card-header">
+                        <div>
+                            <h3>${item.title}</h3>
+                            <div style="color: #666; font-size: 14px;">${item.speaker} • ${item.category}</div>
+                        </div>
+                        <div class="item-card-actions">
+                            <button class="btn btn-small btn-danger" onclick="deleteAudioItem(${item.id})">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showAudioModal(id) {
+            const item = audioData.find(i => i.id === id);
+            const modal = document.getElementById('itemModal');
+            document.getElementById('modalBody').innerHTML = `
+                <h2>${item.title}</h2>
+                <p style="color: #666; margin-bottom: 20px;">${item.speaker} • ${item.category}</p>
+                <audio controls>
+                    <source src="${item.url}" type="audio/mpeg">
+                </audio>
+                <p style="margin-top: 20px;">${item.description}</p>
+            `;
+            modal.classList.add('active');
+        }
+
+        // Photo Functions
+        function addPhotoItem() {
+            const item = {
+                id: Date.now(),
+                title: document.getElementById('photoTitle').value,
+                url: document.getElementById('photoUrl').value,
+                year: document.getElementById('photoYear').value,
+                description: document.getElementById('photoDescription').value,
+                tags: document.getElementById('photoTags').value
+            };
+            
+            if (item.title && item.url) {
+                photoData.push(item);
+                renderPhotos();
+                renderPhotosAdmin();
+                clearPhotoForm();
+            }
+        }
+
+        function deletePhotoItem(id) {
+            photoData = photoData.filter(item => item.id !== id);
+            renderPhotos();
+            renderPhotosAdmin();
+        }
+
+        function clearPhotoForm() {
+            document.getElementById('photoTitle').value = '';
+            document.getElementById('photoUrl').value = '';
+            document.getElementById('photoYear').value = '';
+            document.getElementById('photoDescription').value = '';
+            document.getElementById('photoTags').value = '';
+        }
+
+        function renderPhotos() {
+            const grid = document.getElementById('photoGrid');
+            if (photoData.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><h3>No photos yet</h3><p>Add photos from the admin panel</p></div>';
+                return;
+            }
+            
+            grid.innerHTML = photoData.map(item => `
+                <div class="card" onclick="showPhotoModal(${item.id})">
+                    <img src="${item.url}" class="card-image" style="height: 220px; object-fit: cover;" alt="${item.title}">
+                    <div class="card-content">
+                        <h3 class="card-title">${item.title}</h3>
+                        <div class="card-meta">${item.year}</div>
+                        <p class="card-description">${item.description.substring(0, 120)}...</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPhotosAdmin() {
+            const list = document.getElementById('photoList');
+            list.innerHTML = photoData.map(item => `
+                <div class="item-card">
+                    <div class="item-card-header">
+                        <div>
+                            <h3>${item.title}</h3>
+                            <div style="color: #666; font-size: 14px;">${item.year}</div>
+                        </div>
+                        <div class="item-card-actions">
+                            <button class="btn btn-small btn-danger" onclick="deletePhotoItem(${item.id})">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showPhotoModal(id) {
+            const item = photoData.find(i => i.id === id);
+            const modal = document.getElementById('itemModal');
+            document.getElementById('modalBody').innerHTML = `
+                <h2>${item.title}</h2>
+                <p style="color: #666; margin-bottom: 20px;">${item.year}</p>
+                <img src="${item.url}" style="width: 100%; border-radius: 8px; margin: 20px 0;" alt="${item.title}">
+                <p>${item.description}</p>
+                ${item.tags ? `<p style="margin-top: 15px; color: #666;">Tags: ${item.tags}</p>` : ''}
+            `;
+            modal.classList.add('active');
+        }
+
+        // Article Functions
+        function addArticleItem() {
+            const item = {
+                id: Date.now(),
+                title: document.getElementById('artTitle').value,
+                author: document.getElementById('artAuthor').value,
+                date: document.getElementById('artDate').value,
+                content: document.getElementById('artContent').value,
+                image: document.getElementById('artImage').value
+            };
+            
+            if (item.title && item.content) {
+                articleData.push(item);
+                renderArticles();
+                renderArticlesAdmin();
+                clearArticleForm();
+            }
+        }
+
+        function deleteArticleItem(id) {
+            articleData = articleData.filter(item => item.id !== id);
+            renderArticles();
+            renderArticlesAdmin();
+        }
+
+        function clearArticleForm() {
+            document.getElementById('artTitle').value = '';
+            document.getElementById('artAuthor').value = '';
+            document.getElementById('artDate').value = '';
+            document.getElementById('artContent').value = '';
+            document.getElementById('artImage').value = '';
+        }
+
+        function renderArticles() {
+            const grid = document.getElementById('articleGrid');
+            if (articleData.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><h3>No articles yet</h3><p>Add articles from the admin panel</p></div>';
+                return;
+            }
+            
+            grid.innerHTML = articleData.map(item => `
+                <div class="card" onclick="showArticleModal(${item.id})">
+                    ${item.image ? `<img src="${item.image}" class="card-image" style="height: 220px; object-fit: cover;">` : '<div class="card-image">📝</div>'}
+                    <div class="card-content">
+                        <h3 class="card-title">${item.title}</h3>
+                        <div class="card-meta">${item.author} • ${item.date}</div>
+                        <p class="card-description">${item.content.substring(0, 120)}...</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderArticlesAdmin() {
+            const list = document.getElementById('articleList');
+            list.innerHTML = articleData.map(item => `
+                <div class="item-card">
+                    <div class="item-card-header">
+                        <div>
+                            <h3>${item.title}</h3>
+                            <div style="color: #666; font-size: 14px;">${item.author} • ${item.date}</div>
+                        </div>
+                        <div class="item-card-actions">
+                            <button class="btn btn-small btn-danger" onclick="deleteArticleItem(${item.id})">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showArticleModal(id) {
+            const item = articleData.find(i => i.id === id);
+            const modal = document.getElementById('itemModal');
+            document.getElementById('modalBody').innerHTML = `
+                <h2>${item.title}</h2>
+                <p style="color: #666; margin-bottom: 20px;">${item.author} • ${item.date}</p>
+                ${item.image ? `<img src="${item.image}" style="width: 100%; border-radius: 8px; margin: 20px 0;">` : ''}
+                <p style="white-space: pre-wrap; line-height: 1.8;">${item.content}</p>
+            `;
+            modal.classList.add('active');
+        }
+
+        // Filter Functions
+        function filterLibrary(category) {
+            document.querySelectorAll('#libraryFilters .filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            // Implement filtering logic here
+        }
+
+        function filterVideos(category) {
+            document.querySelectorAll('#videoFilters .filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function filterAudio(category) {
+            document.querySelectorAll('#audioFilters .filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Search Function
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            // Implement search across all data
+            console.log('Searching for:', query);
+        }
+
+        // Modal Functions
+        function closeModal() {
+            document.getElementById('itemModal').classList.remove('active');
+        }
+
+        // Initialize
+        renderLibrary();
+        renderVideos();
+        renderAudio();
+        renderPhotos();
+        renderArticles();
+    </script>
+</body>
+</html>
